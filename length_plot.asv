@@ -1,5 +1,5 @@
-function length_plot(varargin)
-    global x1 y1 z1 x2 y2 z2 lengths plot_range thickness;
+function length_plot(x1,y1,z1,x2,y2,z2,lengths)
+    global 
     % quiver3
     subplot(1,1,1)
     % You can find out the indices of the cells whose center of mass has height less than 2um by the following command:
@@ -28,32 +28,4 @@ function length_plot(varargin)
         'ColorData', reshape(cmap(1:2,:,:), [], 4).');
     h1 = colorbar;
     h1.Label.String = 'cell length';
-    
-    if nargin == 0
-        axis(plot_range);
-    elseif nargin == 2
-        cut_dir = varargin{1};
-        cut1 = varargin{2};
-        cut2 = cut1+thickness;
-        range = plot_range;   
-        if cut_dir == 'X'
-            range(1) = cut1;
-            range(2) = cut2;
-            view([-90 0])
-        elseif cut_dir == 'Y'
-            range(3) = cut1;
-            range(4) = cut2;
-            view([0 0])
-        elseif cut_dir == 'Z'
-            range(5) = cut1;
-            range(6) = cut2;
-            view([0 -90])
-        else
-            error("axis incorrect, can only be X, Y or Z");
-        end
-        axis(range);
-        xlabel('X');
-        ylabel('Y');
-        zlabel('Z');
-    end
 end
