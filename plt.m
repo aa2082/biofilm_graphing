@@ -1,44 +1,24 @@
 classdef plt
-    %UNTITLED9 Summary of this class goes here
-    %   Detailed explanation goes here
-    
+    %PLT class that contains all plotting functions used to visualise
+    %biofilm data
     methods (Static)
-        function age_plot(cut_dir,cut1,color_label)
-            global x y z c i_cells thickness dot_size plot_range;
+        function age_plot(varargin)
+            global x y z dot_size c;
+            %plots each cell as a dot in 3d space with the average pole age
+            %representing a color
             figure
             scatter3(x,y,z,dot_size,c, 'filled');
-            cut2 = cut1+thickness;
-            range = plot_range;   
-            if cut_dir == 'X'
-                range(1) = cut1;
-                range(2) = cut2;
-                view([-90 0])
-            elseif cut_dir == 'Y'
-                range(3) = cut1;
-                range(4) = cut2;
-                view([0 0])
-            elseif cut_dir == 'Z'
-                range(5) = cut1;
-                range(6) = cut2;
-                view([0 -90])
-            else
-                error("axis incorrect, can only be X, Y or Z");
-            end
-            axis(range);
-            xlabel('X');
-            ylabel('Y');
-            zlabel('Z');
             box on
             h1=colorbar;
-            h1.Label.String = color_label;
+            h1.Label.String = "average pole age of cell";
             colormap(parula(10))
             caxis([0, ceil(max(c))]);
-            title(['time = ' num2str(i_cells*.1) 'h - ' cut_dir ' cross section']);
+            cross_sec(varargin, nargin);
         end
         function length_plot(varargin)
-            %METHOD1 Summary of this method goes here
-            %   Detailed explanation goes here
-            global x1 y1 z1 x2 y2 z2 lengths plot_range thickness;
+            %plots each cell as a line in 3d space with the length of the
+            %cel determined by the color of the line
+            global x1 y1 z1 x2 y2 z2 lengths;
             % quiver3
             subplot(1,1,1)
             % You can find out the indices of the cells whose center of mass has height less than 2um by the following command:
@@ -72,14 +52,16 @@ classdef plt
     end
 end
 function cross_sec(var, nvar)
-    global plot_range thickness;
+    %deals with all cross sections in above graphs
+    global plot_range thickness i_cells;
     if nvar == 0
         axis(plot_range);
     elseif nvar == 2
         cut_dir = var{1};
         cut1 = var{2};
         cut2 = cut1+thickness;
-        range = plot_range;   
+        range = plot_range;
+        title(['time = ' num2str(i_cells*.1) 'h - ' cut_dir ' cross section']);
         if cut_dir == 'X'
             range(1) = cut1;
             range(2) = cut2;
