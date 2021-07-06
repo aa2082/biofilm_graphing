@@ -2,16 +2,23 @@ classdef plt
     %PLT class that contains all plotting functions used to visualise
     %biofilm data
     methods (Static)
-        function plot(x,y,z,dot_size,color_var, color_var_name, varargin)
-            %plots each cell as a dot in 3d space colored according to
-            %color_var
+        function age_plot(varargin)
+            global x y z dot_size c;
+            if nargin >= 2
+                color_var = nargin{1};
+                color_var_name = nargin{2};
+            else
+                error("need color variable and it's name to put on colorbar")
+            end
+            %plots each cell as a dot in 3d space with the average pole age
+            %representing a color
             figure
-            scatter3(x,y,z,dot_size,color_var, 'filled');
+            scatter3(x,y,z,dot_size,c, 'filled');
             box on
             h1=colorbar;
-            h1.Label.String = color_var_name;
+            h1.Label.String = "average pole age of cell";
             colormap(parula(10))
-            caxis([floor(min(color_var)), ceil(max(color_var))]);
+            caxis([0, ceil(max(c))]);
             cross_sec(varargin, nargin);
         end
     end
@@ -19,9 +26,9 @@ end
 function cross_sec(var, nvar)
     %deals with all cross sections in above graphs
     global plot_range thickness i_cells;
-    if nvar == 2
+    if nvar == 0
         axis(plot_range);
-    elseif nvar == 4
+    elseif nvar == 2
         cut_dir = var{1};
         cut1 = var{2};
         cut2 = cut1+thickness;
