@@ -2,7 +2,7 @@ classdef plt
     %PLT class that contains all plotting functions used to visualise
     %biofilm data
     methods (Static)
-        function plot(x,y,z,dot_size,color_var, color_var_name, varargin)
+        function color_scatter(x,y,z,dot_size,color_var, color_var_name, varargin)
             %plots each cell as a dot in 3d space colored according to
             %color_var
             figure
@@ -10,18 +10,51 @@ classdef plt
             box on
             h1=colorbar;
             h1.Label.String = color_var_name;
-            colormap(parula(10))
-            caxis([floor(min(color_var)), ceil(max(color_var))]);
-            cross_sec(varargin, nargin);
+            colormap(parula)
+            caxis([min(color_var), max(color_var)]);
+            cross_sec(6, varargin, nargin);
+        end
+        function color_quiver(x1,y1,z1,x2,y2,z2,color_var, color_var_name, varargin)
+            %plots each cell as a line in 3d space with the length of the
+            %cel determined by the color of the line
+            % quiver3
+            subplot(1,1,1)
+            % You can find out the indices of the cells whose center of mass has height less than 2um by the following command:
+            % https://stackoverflow.com/questions/29632430/quiver3-arrow-color-corresponding-to-magnitude
+            % You can plot all such cells with stick representation and different color by the following command:
+            %q = quiver3(cells(:,4), cells(:,5), cells(:,6), cells(:,7)-cells(:,4), cells(:,8)-cells(:,5), cells(:,9)-cells(:,6));
+            q = quiver3(x1,y1,z1,x2-x1,y2-y1,z2-z1,'b', 'ShowArrowHead','off', 'Autoscale','off');
+
+            %// Get the current colormap
+
+            colormap default
+            caxis([min(color_var), max(color_var)])
+            currentColormap = colormap(gca);
+
+            %// Now determine the color to make each arrow using a colormap
+            [~, ~, ind] = histcounts(lengths, size(currentColormap, 1));
+
+            %// Now map this to a colormap to get RGB
+            cmap = uint8(ind2rgb(ind(:), currentColormap) * 255);
+            cmap(:,:,4) = 255;
+            cmap = permute(repmat(cmap, [1 3 1]), [2 1 3]);
+
+            %// We repeat each color 2 times (using 1:2 below) because each tail has 2 vertices
+            set(q.Tail, ...
+                'ColorBinding', 'interpolated', ...
+                'ColorData', reshape(cmap(1:2,:,:), [], 4).');
+            h1 = colorbar;
+            h1.Label.String = color_var_name;
+            cross_sec(8,varargin, nargin);
         end
     end
 end
-function cross_sec(var, nvar)
+function cross_sec(number_of_var_no_cut,var, nvar)
     %deals with all cross sections in above graphs
     global plot_range thickness i_cells;
-    if nvar == 6
+    if nvar == number_of_var_no_cut
         axis(plot_range);
-    elseif nvar == 8
+    elseif nvar == number_of_var_no_cut + 2
         cut_dir = var{1};
         cut1 = var{2};
         cut2 = cut1+thickness;
@@ -48,4 +81,3 @@ function cross_sec(var, nvar)
         zlabel('Z');
     end
 end
-
