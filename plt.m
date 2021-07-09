@@ -19,9 +19,9 @@ end
 function cross_sec(var, nvar)
     %deals with all cross sections in above graphs
     global plot_range thickness i_cells;
-    if nvar == 2
+    if nvar == 6
         axis(plot_range);
-    elseif nvar == 4
+    elseif nvar == 8
         cut_dir = var{1};
         cut1 = var{2};
         cut2 = cut1+thickness;
