@@ -11,7 +11,7 @@ classdef plt
             h1=colorbar;
             h1.Label.String = color_var_name;
             colormap(parula)
-            caxis([min(color_var), max(color_var)]);
+            caxis([min(color_var) max(color_var)]);
             cross_sec(6, varargin, nargin);
         end
         function color_quiver(x1,y1,z1,x2,y2,z2,color_var, color_var_name, varargin)
@@ -32,7 +32,7 @@ classdef plt
             currentColormap = colormap(gca);
 
             %// Now determine the color to make each arrow using a colormap
-            [~, ~, ind] = histcounts(lengths, size(currentColormap, 1));
+            [~, ~, ind] = histcounts(color_var, size(currentColormap, 1));
 
             %// Now map this to a colormap to get RGB
             cmap = uint8(ind2rgb(ind(:), currentColormap) * 255);
